@@ -7,11 +7,16 @@ class Transaction extends Thread implements SocketConnection {
     private InputStream inputStream;
     private OutputStream outputStream;
     private Socket socket;
+    private SynchList outputs;
+    private int n;
 
-    public Transaction(Socket s) throws Exception {
-        inputStream = s.getInputStream();
-        outputStream = s.getOutputStream();
-        socket = s;
+    public Transaction(int i, SynchList o, Socket s) throws Exception {
+        this.inputStream = s.getInputStream();
+        this.outputStream = s.getOutputStream();
+        this.socket = s;
+        this.outputs = o;
+        this.n = i;
+        this.outputs.add(outputStream);
     }
 
     public void run() {
@@ -23,15 +28,21 @@ class Transaction extends Thread implements SocketConnection {
         int data;
 
         try {
-            // keep reading until "Over" is input
             while ((data = inputStream.read()) != -1) {
 
-                Character caps = Character.toUpperCase((char) data);
+                for (int j = 0; j < outputs.size(); j++) {
 
-                outputStream.write(caps);
-                outputStream.flush();
-                System.out.print(caps);
+
+                        Character caps = Character.toUpperCase((char) data);
+                        outputs.get(j).write(caps);
+                        outputs.get(j).flush();
+
+                }
+                System.out.print((char) data);
+
             }
+            System.out.print("size of ArrayList :" + outputs.size());
+            System.out.print("left loop");
         } catch (IOException i) {
             System.out.println("Error " + i);
         }

@@ -43,7 +43,7 @@ public class Client implements SocketConnection {
         int data;
 
         try {
-            // keep reading until "Over" is input
+
             while ((data = userInput.read()) != -1) {
                 outputStream.write(data);
                 outputStream.flush();
