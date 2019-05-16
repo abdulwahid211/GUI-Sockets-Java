@@ -1,9 +1,20 @@
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Client extends SocketConnection {
+public class Client implements SocketConnection {
+
+
+    protected Socket socket;
+
+    protected InputStream inputStream;
+
+    protected OutputStream outputStream;
+
+    protected InputStreamReader userInput;
 
 
     public Client(String hostName, int port) {
@@ -41,6 +52,19 @@ public class Client extends SocketConnection {
         }
         catch (IOException i){
             System.out.println("Error "+i);
+        }
+    }
+
+
+    //override close method
+    public void closeConnections() {
+        try {
+            inputStream.close();
+            outputStream.close();
+            userInput.close();
+            this.socket.close();
+        } catch (IOException i) {
+            System.out.println(i);
         }
     }
 
