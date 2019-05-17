@@ -11,8 +11,8 @@ class Transaction extends Thread implements SocketConnection {
     private int n;
 
     public Transaction(int i, SynchList o, Socket s) throws Exception {
-        this.inputStream = new ObjectInputStream(s.getInputStream());
         this.outputStream = new ObjectOutputStream(s.getOutputStream());
+        this.inputStream = new ObjectInputStream(s.getInputStream());
         this.socket = s;
         this.outputs = o;
         this.n = i;
@@ -35,15 +35,17 @@ class Transaction extends Thread implements SocketConnection {
                         outputs.get(j).flush();
 
                 }
-                System.out.print(p);
+                System.out.println(p);
 
             }
+        } catch (Exception e) {
+            System.out.println("Error " + e);
+
             System.out.print("client " + n + " left loop");
             this.outputs.remove(outputStream);
             System.out.println("size of ArrayList :" + outputs.size());
-            System.out.println("left loop");
-        } catch (Exception e) {
-            System.out.println("Error " + e);
+
+
         }
     }
 

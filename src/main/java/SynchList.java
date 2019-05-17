@@ -5,7 +5,7 @@ public class SynchList {
     private ArrayList<ObjectOutputStream> list;
 
     SynchList() {
-        list = new ArrayList<>();
+        list = new ArrayList<ObjectOutputStream>();
     }
 
     synchronized ObjectOutputStream get(int i) {

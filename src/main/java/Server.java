@@ -1,4 +1,4 @@
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 
 public class Server {
@@ -7,7 +7,7 @@ public class Server {
 
     private Transaction transactions;
 
-    private static SynchList outputs;
+    private SynchList outputs;
 
     public Server(int port) {
 

@@ -23,7 +23,7 @@ public class Client implements SocketConnection {
             try {
                 Object p;
                 while ((p = inputStream.readObject()) != null) {
-                    System.out.print(p);
+                    System.out.println(p);
                 }
 
             } catch (Exception e) {
@@ -39,15 +39,19 @@ public class Client implements SocketConnection {
 
             socket = new Socket(hostName, port);
 
-            name = "A";
+            userInput = new Scanner(System.in);
 
-            // takes input from the sockets
-            inputStream = new ObjectInputStream(socket.getInputStream());
+            System.out.println("Please enter your name? ");
+            name = userInput.next();
 
             // sends output to the socket
             outputStream = new ObjectOutputStream(socket.getOutputStream());
 
-           new serverReader().start();
+            // takes input from the sockets
+            inputStream = new ObjectInputStream(socket.getInputStream());
+
+
+            new serverReader().start();
 
         } catch (UnknownHostException u) {
             System.out.println(u);
@@ -61,11 +65,8 @@ public class Client implements SocketConnection {
 
         try {
 
-            userInput = new Scanner(System.in);
-
-            while (userInput.hasNext()) {
-                System.out.print(900000);
-                String message = userInput.nextLine();
+            while (userInput.hasNextLine()) {
+                String message = userInput.next();
                 outputStream.writeObject(new Person(name, message));
                 outputStream.flush();
             }
@@ -89,7 +90,7 @@ public class Client implements SocketConnection {
 
     public static void main(String[] args) {
 
-        Client client = new Client("127.0.0.1", 5001);
+        Client client = new Client("127.0.0.1", 5000);
         client.communicate();
         client.closeConnections();
     }
