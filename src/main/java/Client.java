@@ -1,20 +1,36 @@
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 public class Client implements SocketConnection {
 
 
     protected Socket socket;
 
-    protected InputStream inputStream;
+    protected ObjectInputStream inputStream;
 
-    protected OutputStream outputStream;
+    protected ObjectOutputStream outputStream;
 
-    protected InputStreamReader userInput;
+    protected Scanner userInput;
+
+    protected static String name;
+
+
+    class serverReader extends Thread {
+
+        public void run() {
+            try {
+                Object p;
+                while ((p = inputStream.readObject()) != null) {
+                    System.out.print(p);
+                }
+
+            } catch (Exception e) {
+            }
+
+        }
+    }
 
 
     public Client(String hostName, int port) {
@@ -23,13 +39,15 @@ public class Client implements SocketConnection {
 
             socket = new Socket(hostName, port);
 
-            userInput = new InputStreamReader(System.in);
+            name = "A";
 
             // takes input from the sockets
-            inputStream = socket.getInputStream();
+            inputStream = new ObjectInputStream(socket.getInputStream());
 
             // sends output to the socket
-            outputStream =  socket.getOutputStream();
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
+
+           new serverReader().start();
 
         } catch (UnknownHostException u) {
             System.out.println(u);
@@ -40,18 +58,19 @@ public class Client implements SocketConnection {
 
 
     public void communicate() {
-        int data;
 
         try {
 
-            while ((data = userInput.read()) != -1) {
-                outputStream.write(data);
+            userInput = new Scanner(System.in);
+
+            while (userInput.hasNext()) {
+                System.out.print(900000);
+                String message = userInput.nextLine();
+                outputStream.writeObject(new Person(name, message));
                 outputStream.flush();
-                System.out.print((char) inputStream.read());
             }
-        }
-        catch (IOException i){
-            System.out.println("Error "+i);
+        } catch (IOException i) {
+            System.out.println("Error " + i);
         }
     }
 
@@ -70,7 +89,7 @@ public class Client implements SocketConnection {
 
     public static void main(String[] args) {
 
-        Client client = new Client("127.0.0.1", 5000);
+        Client client = new Client("127.0.0.1", 5001);
         client.communicate();
         client.closeConnections();
     }

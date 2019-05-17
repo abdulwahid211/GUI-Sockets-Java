@@ -5,19 +5,12 @@ public class Person implements Serializable {
     private String name;
     private String message;
 
-    public Person(String _name){
+    public Person(String _name, String _message) {
         this.name = _name;
+        this.message = _message;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public String toString() {
+        return this.name + ": " + this.message;
     }
 }

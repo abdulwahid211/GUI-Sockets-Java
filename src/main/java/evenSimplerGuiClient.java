@@ -28,6 +28,7 @@ public class evenSimplerGuiClient implements ActionListener {
                 {
                     s=s+ ((char)c);
                     server.setText(s);
+                    System.out.println(s);
                 }
             }
             catch(Exception e){};
@@ -64,7 +65,8 @@ public class evenSimplerGuiClient implements ActionListener {
         try
         {
             p.write(s+'\n',0,s.length()+1);
-            p.flush();user.setText("");
+            p.flush();
+            user.setText("");
         }
         catch (Exception e){};
     }

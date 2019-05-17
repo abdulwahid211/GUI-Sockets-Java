@@ -9,13 +9,11 @@ public class Server {
 
     private static SynchList outputs;
 
-    private static int num__of_clients =0;
-
     public Server(int port) {
 
         try {
             serverSocket = new ServerSocket(port);
-            outputs= new SynchList();
+            outputs = new SynchList();
         } catch (IOException i) {
             System.out.println(i);
         }
@@ -25,9 +23,9 @@ public class Server {
 
         try {
             while (true) {
-                transactions = new Transaction(num__of_clients,outputs,serverSocket.accept());
+                transactions = new Transaction(outputs.size(), outputs, serverSocket.accept());
                 transactions.start();
-                System.out.println("New client has joined...");
+                System.out.println("Client has joined...");
             }
         } catch (Exception i) {
             System.out.println("Transaction failed: " + i);
