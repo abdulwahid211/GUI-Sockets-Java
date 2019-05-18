@@ -1,13 +1,16 @@
+import java.awt.*;
 import java.io.Serializable;
 
 public class Person implements Serializable {
 
     private String name;
     private String message;
+    private Color color;
 
-    public Person(String _name, String _message) {
+    public Person(String _name, String _message, Color _color) {
         this.name = _name;
         this.message = _message;
+        this.color = _color;
     }
 
     public String toString() {

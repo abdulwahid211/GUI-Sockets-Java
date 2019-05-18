@@ -9,7 +9,7 @@ public class evenSimplerGuiClient implements ActionListener {
     private JTextField user = new JTextField("user",20);
     private JTextArea server = new JTextArea("server",5,20);
     private JScrollPane sp =new JScrollPane(server);
-    private  Socket s;
+    private Socket s;
     private OutputStreamWriter p;
     private InputStream i;
     private JFrame window = new JFrame("client");
