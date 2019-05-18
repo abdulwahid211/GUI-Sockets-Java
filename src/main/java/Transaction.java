@@ -35,7 +35,7 @@ class Transaction extends Thread implements SocketConnection {
                         outputs.get(j).flush();
 
                 }
-                System.out.println(p);
+                System.out.println(p.toString());
 
             }
         } catch (Exception e) {

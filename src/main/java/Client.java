@@ -8,6 +8,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -29,7 +30,6 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
     private JPanel switchPanels; // a panel that uses CardLayout
 
     ///Swing UI
-
     private JFrame window;
 
     private JPanel cover;
@@ -44,6 +44,7 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
 
     private JTextArea server;
     private JTextField input;
+    private JScrollPane scrollBar;
 
 
     public void runPanel() {
@@ -64,6 +65,7 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
         cover.add(clientName);
         cover.add(labels_cover[0]);
 
+
         host = new JTextField();
         host.setBounds(60, 120, 400, 40);
         host.setText("localhost");
@@ -77,6 +79,7 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
         port = new JTextField();
         port.setBounds(60, 180, 400, 40);
         port.addActionListener(this);
+        port.setText("5000");
         labels_cover[2] = new JLabel("Please enter your port number?");
         labels_cover[2].setBounds(60, 150, 300, 40);
         cover.add(labels_cover[2]);
@@ -88,7 +91,7 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
         run.addActionListener(this);
         cover.add(run);
 
-//        switchPanels.add(cover, "cover");
+        switchPanels.add(cover, "cover");
 
         main = new JPanel();
         main.setLayout(null); // Setting to layout to null, so it becomes absolute position
@@ -105,26 +108,26 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setVisible(true); // display frame
 
-
     }
 
     public void mainInterface() {
 
-        window.setTitle("Client: Abzy");
+        window.setTitle(this.clientName.getText());
         main.setBackground(clientColour);
 
-        labels_cover[3] = new JLabel("Display Message:");
+        labels_cover[3] = new JLabel("Display Messages:");
         labels_cover[3].setForeground(Color.white);
         labels_cover[3].setBounds(30, -5, 300, 40);
         main.add(labels_cover[3]);
 
         Border thinBorder = LineBorder.createBlackLineBorder();
         server = new JTextArea();
-        server.setBounds(20, 30, 450, 150);
         server.setEditable(false);
         server.setBorder(thinBorder);
+        scrollBar = new JScrollPane(server);
+        scrollBar.setBounds(20, 30, 450, 150);
 
-        main.add(server);
+        main.add(scrollBar);
 
         users_lists = new ArrayList<>();
         users_lists.add("Everyone");
@@ -146,33 +149,9 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
 
         input = new JTextField();
         input.setBounds(20, 280, 450, 30);
+        input.addActionListener(this);
         main.add(input);
 
-
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        CardLayout changePages = (CardLayout) (switchPanels.getLayout());
-
-//        if (e.getSource() == run && port.getText().length() < 1 && clientName.getText().length() < 1) {
-//
-//            JOptionPane.showMessageDialog(null, "All forms must be filled!");
-//
-//        }
-//        if (e.getSource() == run && port.getText().length() > 0 && clientName.getText().length() > 0) {
-//
-//            mainInterface();
-//            changePages.show(switchPanels, "main");
-//            window.setSize(500, 350);
-//
-//        }
-
-    }
-
-    public void itemStateChanged(ItemEvent e) {
-        // if the state combobox is changed
 
     }
 
@@ -182,8 +161,12 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
         public void run() {
             try {
                 Object p;
+                String message = "";
                 while ((p = inputStream.readObject()) != null) {
-                    System.out.println(p);
+
+                    message = message + p.toString() + "\n";
+                    server.setText(message);
+
                 }
 
             } catch (Exception e) {
@@ -192,50 +175,50 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
         }
     }
 
+    public Client() {
 
-    public Client(String hostName, int port) {
+
+        try {
+
+            clientColour = randomColors();
+            runPanel();
+
+            int port_number = Integer.parseInt(port.getText());
+
+            socket = new Socket(host.getText(), port_number);
+
+            // sends output to the socket
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
+
+            // takes input from the sockets
+            inputStream = new ObjectInputStream(socket.getInputStream());
 
 
-//        try {
-//
-//            socket = new Socket(hostName, port);
-//
-//            // sends output to the socket
-//            outputStream = new ObjectOutputStream(socket.getOutputStream());
-//
-//            // takes input from the sockets
-//            inputStream = new ObjectInputStream(socket.getInputStream());
+            new serverReader().start();
 
-        clientColour = randomColors();
-        runPanel();
-//
-//
-//            new serverReader().start();
-//
-//        } catch (UnknownHostException u) {
-//            System.out.println(u);
-//        } catch (IOException i) {
-//            System.out.println(i);
-//        }
+        } catch (UnknownHostException u) {
+            System.out.println(u);
+        } catch (IOException i) {
+            System.out.println(i);
+        }
     }
 
 
     public void communicate() {
 
         try {
+            String message = input.getText();
+            outputStream.writeObject(new Person(this.clientName.getText(), message));
+            outputStream.flush();
 
-            while (userInput.hasNextLine()) {
-                String message = userInput.next();
-                outputStream.writeObject(new Person(this.clientName.getText(), message, clientColour));
-                outputStream.flush();
-            }
         } catch (IOException i) {
             System.out.println("Error " + i);
         }
+
+        input.setText("");
     }
 
 
-    //override close method
     public void closeConnections() {
         try {
             inputStream.close();
@@ -256,11 +239,39 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
         return new Color(red, green, blue);
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        CardLayout changePages = (CardLayout) (switchPanels.getLayout());
+
+        if (e.getSource() == run && port.getText().length() < 1 && clientName.getText().length() < 1) {
+
+            JOptionPane.showMessageDialog(null, "All forms must be filled!");
+
+        }
+        if (e.getSource() == run && port.getText().length() > 0 && clientName.getText().length() > 0) {
+
+            changePages.show(switchPanels, "main");
+            window.setSize(500, 350);
+
+        }
+
+        if (!input.getText().equals("")) {
+            // user message input
+            communicate();
+
+        }
+
+    }
+
+    public void itemStateChanged(ItemEvent e) {
+        // if the state combobox is changed
+
+    }
+
     public static void main(String[] args) {
 
-        Client client = new Client("127.0.0.1", 5000);
-//        client.communicate();
-//        client.closeConnections();
+        new Client();
     }
 
 }

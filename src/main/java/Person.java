@@ -7,10 +7,9 @@ public class Person implements Serializable {
     private String message;
     private Color color;
 
-    public Person(String _name, String _message, Color _color) {
+    public Person(String _name, String _message) {
         this.name = _name;
         this.message = _message;
-        this.color = _color;
     }
 
     public String toString() {
