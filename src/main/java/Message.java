@@ -1,19 +1,29 @@
 import java.awt.*;
 import java.io.Serializable;
 
-public class Person implements Serializable {
+public class Message implements Serializable {
 
     private String name;
     private String message;
-    private Color color;
+    private String toWho;
 
-    public Person(String _name, String _message) {
+    public Message(String _name, String _message, String _toWho) {
         this.name = _name;
         this.message = _message;
+        this.toWho = _toWho;
     }
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+
+    public String getToWho() {
+        return toWho;
+    }
+
+    public void setToWho(String toWho) {
+        this.toWho = toWho;
     }
 
     public String toString() {

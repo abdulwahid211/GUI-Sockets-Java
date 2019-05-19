@@ -9,7 +9,7 @@ class Transaction extends Thread implements SocketConnection {
     private Socket socket;
     private SynchList outputs;
     private int n;
-    private Person person;
+    private Message message;
 
     public Transaction(int i, SynchList o, Socket s) throws Exception {
         this.outputStream = new ObjectOutputStream(s.getOutputStream());
@@ -33,21 +33,21 @@ class Transaction extends Thread implements SocketConnection {
 
                 // deserializing the object, reading the content from the
                 // clients
-                person = (Person) inputStream.readObject();
+                message = (Message) inputStream.readObject();
 
                 for (int j = 0; j < outputs.size(); j++) {
-                        outputs.get(j).writeObject(person);
+                        outputs.get(j).writeObject(message);
                         outputs.get(j).flush();
 
                 }
 
-                System.out.println(person.toString());
+                System.out.println(message.toString());
 
             }
         } catch (Exception e) {
             System.out.println("Error " + e);
             this.outputs.remove(outputStream);
-            System.out.print("client " + n + " left loop");
+            System.out.println("client " + n + " left loop");
         }
 
 

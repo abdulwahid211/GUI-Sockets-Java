@@ -21,6 +21,8 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
 
     protected ObjectOutputStream outputStream;
 
+    protected String CurrentToWho = "Everyone";
+
     protected static ArrayList<String> users_lists;
     private JComboBox<String> display_users;
 
@@ -129,8 +131,13 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
         users_lists = new ArrayList<>();
         users_lists.add("Everyone");
         users_lists.add("Sam");
+        users_lists.add("Tom");
+        users_lists.add("Amy");
+        users_lists.add("Ben");
         display_users = new JComboBox(users_lists.toArray());
         display_users.setBounds(20, 200, 200, 50);
+
+        display_users.addItemListener(this);
 
         labels_cover[4] = new JLabel("Direct message to");
         labels_cover[4].setForeground(Color.white);
@@ -157,12 +164,21 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
 
         public void run() {
             try {
-                Object p;
+                Message p;
                 String message = "";
-                while ((p = inputStream.readObject()) != null) {
+                while ((p = (Message) inputStream.readObject()) != null) {
 
-                    message = message + p.toString() + "\n";
-                    server.setText(message);
+                    if(p.getToWho().equals("Everyone")) {
+                        message = message + p.toString() + "\n";
+                        server.setText(message);
+                    }
+
+                    if(p.getToWho().toLowerCase().equals(clientName.getText().toLowerCase())) {
+                        message = message + p.toString() + "\n";
+                        server.setText(message);
+                    }
+
+
 
                 }
 
@@ -205,7 +221,7 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
 
         try {
             String message = input.getText();
-            outputStream.writeObject(new Person(this.clientName.getText(), message));
+            outputStream.writeObject(new Message(this.clientName.getText(), message, CurrentToWho));
             outputStream.flush();
 
         } catch (IOException i) {
@@ -261,7 +277,11 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
     }
 
     public void itemStateChanged(ItemEvent e) {
-        // if the state combobox is changed
+
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+
+            CurrentToWho = (String) e.getItem();
+        }
 
     }
 
