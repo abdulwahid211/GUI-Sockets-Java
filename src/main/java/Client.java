@@ -11,7 +11,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
 
 public class Client implements SocketConnection, ActionListener, ItemListener {
 
@@ -21,8 +20,6 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
     protected ObjectInputStream inputStream;
 
     protected ObjectOutputStream outputStream;
-
-    protected Scanner userInput;
 
     protected static ArrayList<String> users_lists;
     private JComboBox<String> display_users;
@@ -223,7 +220,6 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
         try {
             inputStream.close();
             outputStream.close();
-            userInput.close();
             this.socket.close();
         } catch (IOException i) {
             System.out.println(i);

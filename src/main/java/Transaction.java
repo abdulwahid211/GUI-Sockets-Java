@@ -9,6 +9,7 @@ class Transaction extends Thread implements SocketConnection {
     private Socket socket;
     private SynchList outputs;
     private int n;
+    private Person person;
 
     public Transaction(int i, SynchList o, Socket s) throws Exception {
         this.outputStream = new ObjectOutputStream(s.getOutputStream());
@@ -27,26 +28,29 @@ class Transaction extends Thread implements SocketConnection {
     public void communicate() {
 
         try {
-            Object p;
-            while((p=inputStream.readObject())!=null) {
+
+            while(true) {
+
+                // deserializing the object, reading the content from the
+                // clients
+                person = (Person) inputStream.readObject();
 
                 for (int j = 0; j < outputs.size(); j++) {
-                        outputs.get(j).writeObject(p);
+                        outputs.get(j).writeObject(person);
                         outputs.get(j).flush();
 
                 }
-                System.out.println(p.toString());
+
+                System.out.println(person.toString());
 
             }
         } catch (Exception e) {
             System.out.println("Error " + e);
-
-            System.out.print("client " + n + " left loop");
             this.outputs.remove(outputStream);
-            System.out.println("size of ArrayList :" + outputs.size());
-
-
+            System.out.print("client " + n + " left loop");
         }
+
+
     }
 
     //override close method
@@ -59,4 +63,5 @@ class Transaction extends Thread implements SocketConnection {
             System.out.println(i);
         }
     }
+
 }

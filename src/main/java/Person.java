@@ -12,6 +12,10 @@ public class Person implements Serializable {
         this.message = _message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public String toString() {
         return this.name + ": " + this.message;
     }
