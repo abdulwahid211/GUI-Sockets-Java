@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 
 public class Server implements ActionListener {
 
@@ -11,6 +12,7 @@ public class Server implements ActionListener {
     private Transaction transactions;
     private SynchList outputs;
     private int port_number = 0;
+    private static ArrayList<String> online_users;
 
     ///Swing UI
     private JFrame window;
@@ -68,11 +70,12 @@ public class Server implements ActionListener {
             if (port_number > 0) {
                 serverSocket = new ServerSocket(port_number);
                 outputs = new SynchList();
-
+                online_users = new ArrayList<String>();
+                online_users.add("Everyone");
             }
 
             while (true) {
-                transactions = new Transaction(outputs.size(), outputs, serverSocket.accept());
+                transactions = new Transaction(outputs.size(), outputs,online_users ,serverSocket.accept());
                 System.out.println("Server is now listening on port "+port_number +".....");
                 transactions.start();
                 System.out.println("Client has joined...");

@@ -10,7 +10,9 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class Client implements SocketConnection, ActionListener, ItemListener {
 
@@ -130,10 +132,7 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
 
         users_lists = new ArrayList<>();
         users_lists.add("Everyone");
-        users_lists.add("Sam");
-        users_lists.add("Tom");
-        users_lists.add("Amy");
-        users_lists.add("Ben");
+
         display_users = new JComboBox(users_lists.toArray());
         display_users.setBounds(20, 200, 200, 50);
 
@@ -169,8 +168,17 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
                 while ((p = (Message) inputStream.readObject()) != null) {
 
                     if(p.getToWho().equals("Everyone")) {
+
                         message = message + p.toString() + "\n";
                         server.setText(message);
+
+                    }
+                    if(p.getToWho().equals("Update")) {
+
+                        updateOnlineUsers(p.getOnlineUsers());
+                        message = message + p.toString() + "\n";
+                        server.setText(message);
+
                     }
 
                     if(p.getToWho().toLowerCase().equals(clientName.getText().toLowerCase())) {
@@ -231,6 +239,31 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
         input.setText("");
     }
 
+    public void joinUser() {
+
+        try {
+            outputStream.writeObject(new Message("@join", clientName.getText(), "Update"));
+            outputStream.flush();
+
+        } catch (IOException i) {
+            System.out.println("Error " + i);
+        }
+
+        input.setText("");
+    }
+
+    public void updateOnlineUsers(ArrayList<String> updated_users){
+
+        //remove duplicates
+        Set<String> set = new HashSet<>(updated_users);
+        users_lists.clear();
+        users_lists.addAll(set);
+
+        System.out.print(users_lists);
+        DefaultComboBoxModel defaultComboBoxModel = new DefaultComboBoxModel(users_lists.toArray());
+        display_users.setModel(defaultComboBoxModel);
+    }
+
 
     public void closeConnections() {
         try {
@@ -265,6 +298,7 @@ public class Client implements SocketConnection, ActionListener, ItemListener {
 
             changePages.show(switchPanels, "main");
             window.setSize(500, 350);
+            joinUser();
 
         }
 
