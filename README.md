@@ -1,5 +1,5 @@
 # Sockets-Java-GUI
-An internet chart room application built using Sockets and Swing in Java.   
+An internet chat room application built using Sockets and Swing in Java.   
 
 It uses a Server which enables multiple clients to communicate and interact with each other. 
 
